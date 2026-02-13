@@ -41,5 +41,94 @@
  *   // => { name: "Priya", totalMarks: 63, percentage: 31.5, grade: "F", ... }
  */
 export function generateReportCard(student) {
-  // Your code here
+ 
+  if (typeof student !== 'object' || student === null) {
+    return null;
+  }
+  
+ 
+  if (typeof student.name !== 'string' || student.name.length === 0) {
+    return null;
+  }
+  
+  
+  if (typeof student.marks !== 'object' || student.marks === null) {
+    return null;
+  }
+  
+ 
+  const markEntries = Object.entries(student.marks);
+  if (markEntries.length === 0) {
+    return null;
+  }
+  
+ 
+  for (const [, mark] of markEntries) {
+    if (typeof mark !== 'number' || mark < 0 || mark > 100) {
+      return null;
+    }
+  }
+  
+
+  const markValues = Object.values(student.marks);
+  
+
+  const totalMarks = markValues.reduce((sum, mark) => sum + mark, 0);
+  
+
+  const numSubjects = markValues.length;
+  const percentage = parseFloat(((totalMarks / (numSubjects * 100)) * 100).toFixed(2));
+
+  let grade;
+  if (percentage >= 90) {
+    grade = "A+";
+  } else if (percentage >= 80) {
+    grade = "A";
+  } else if (percentage >= 70) {
+    grade = "B";
+  } else if (percentage >= 60) {
+    grade = "C";
+  } else if (percentage >= 40) {
+    grade = "D";
+  } else {
+    grade = "F";
+  }
+  
+  
+  let maxMark = -Infinity;
+  let minMark = Infinity;
+  let highestSubject = '';
+  let lowestSubject = '';
+  
+  for (const [subject, mark] of markEntries) {
+    if (mark > maxMark) {
+      maxMark = mark;
+      highestSubject = subject;
+    }
+    if (mark < minMark) {
+      minMark = mark;
+      lowestSubject = subject;
+    }
+  }
+  
+ 
+  const passedSubjects = Object.entries(student.marks)
+    .filter(([, mark]) => mark >= 40)
+    .map(([subject]) => subject);
+  
+  const failedSubjects = Object.entries(student.marks)
+    .filter(([, mark]) => mark < 40)
+    .map(([subject]) => subject);
+  
+  return {
+    name: student.name,
+    totalMarks,
+    percentage,
+    grade,
+    highestSubject,
+    lowestSubject,
+    passedSubjects,
+    failedSubjects,
+    subjectCount: numSubjects
+  };
 }
